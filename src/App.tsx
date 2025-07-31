@@ -41,7 +41,6 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route />
             <Route
               path="/leitura-cocho"
               element={
@@ -83,7 +82,18 @@ const App = () => (
               }
             />
             <Route path="/subscription" element={<Subscription />} />
+<<<<<<< HEAD
 
+=======
+            <Route
+              path="/etl"
+              element={
+                <ProtectedRoute>
+                  <ETLManagement />
+                </ProtectedRoute>
+              }
+            />
+>>>>>>> 775afa5b02298745c55f80944f7e4d6bc807314a
             <Route
               path="/usuarios"
               element={
