@@ -1,0 +1,18 @@
+{
+  "name": "Cliente confinamento_farmtell",
+  "data_source": "custom",
+  "api_config": {
+    "type": "custom",
+    "endpoint": "",
+    "credentials": {}
+  },
+  "tenant_id": "confinamento_farmtell",
+  "schedule": "daily",
+  "created_at": "2025-07-30T15:21:50.019713",
+  "status": "active",
+  "etl_config": {
+    "timeout": 300,
+    "retry_attempts": 3,
+    "notifications": true
+  }
+}

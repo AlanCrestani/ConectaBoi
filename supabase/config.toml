@@ -1,0 +1,7 @@
+project_id = "weqvnlbqnkjljiezjrqk"
+
+[functions.execute-python-script]
+verify_jwt = true
+
+[functions.etl-processor]
+verify_jwt = true

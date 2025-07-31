@@ -1,0 +1,14 @@
+# Requirements para ETL - ConectaBoi Insight
+# Dependências básicas para processamento de dados
+
+# Processamento de dados
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Utilitários
+requests>=2.31.0
+openpyxl>=3.1.0
+xlrd>=2.0.0
+
+# Supabase (se necessário)
+# supabase==2.52.0
