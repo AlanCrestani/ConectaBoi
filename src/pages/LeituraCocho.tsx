@@ -545,22 +545,38 @@ const LeituraCocho = () => {
       year: 'numeric'
     });
     const breadcrumbs = [dataFormatada, 'Geral'];
-    if (drillDown.nivel >= 2 && drillDown.dietaSelecionada) {
-      breadcrumbs.push(`Dieta ${drillDown.dietaSelecionada.toLowerCase().replace(/^\w/, c => c.toUpperCase())}`);
+    
+    // Nível 2: Dietas (mostrar sempre no nível 2+)
+    if (drillDown.nivel >= 2) {
+      if (drillDown.dietaSelecionada) {
+        breadcrumbs.push(`Dieta ${drillDown.dietaSelecionada.toLowerCase().replace(/^\w/, c => c.toUpperCase())}`);
+      } else {
+        breadcrumbs.push('Dietas');
+      }
     }
+    
+    // Nível 3: Currais
     if (drillDown.nivel >= 3) {
-      const nomeCurral = dadosGraficoCompletos.find(c => c.id_curral === drillDown.curralSelecionado)?.nome || 'Currais';
-      breadcrumbs.push(drillDown.nivel === 3 ? 'Currais' : nomeCurral);
+      breadcrumbs.push('Currais');
     }
+    
+    // Nível 4: Curral selecionado > Histórico de consumo
     if (drillDown.nivel >= 4) {
+      const nomeCurral = dadosGraficoCompletos.find(c => c.id_curral === drillDown.curralSelecionado)?.nome || 'Curral';
+      breadcrumbs.push(nomeCurral);
       breadcrumbs.push('Histórico de consumo');
     }
+    
+    // Nível 5: Desvio de trato
     if (drillDown.nivel >= 5) {
       breadcrumbs.push('Desvio de trato');
     }
+    
+    // Nível 6: Desvio de carregamento
     if (drillDown.nivel >= 6) {
       breadcrumbs.push('Desvio de carregamento');
     }
+    
     return breadcrumbs;
   };
 
@@ -634,26 +650,33 @@ const LeituraCocho = () => {
   };
 
   // Função para navegação no breadcrumb
-  const handleBreadcrumbClick = (nivel: number) => {
-    if (nivel === 1) {
-      setDrillDown({
-        nivel: 1
-      });
-    } else if (nivel === 2 && drillDown.dietaSelecionada) {
-      setDrillDown({
-        nivel: 2
-      });
-    } else if (nivel === 3 && drillDown.dietaSelecionada) {
-      setDrillDown({
-        nivel: 3,
-        dietaSelecionada: drillDown.dietaSelecionada
-      });
-    } else if (nivel === 4 && drillDown.dietaSelecionada && drillDown.curralSelecionado) {
-      setDrillDown({
-        nivel: 4,
-        dietaSelecionada: drillDown.dietaSelecionada,
-        curralSelecionado: drillDown.curralSelecionado
-      });
+  const handleBreadcrumbClick = (indice: number) => {
+    const breadcrumbs = getBreadcrumb();
+    
+    // Mapear índice do breadcrumb para nível correspondente
+    if (indice <= 1) {
+      // Data ou Geral - volta para nível 1
+      setDrillDown({ nivel: 1 });
+    } else if (indice === 2) {
+      // Dietas/Dieta X - vai para nível 2
+      setDrillDown({ nivel: 2 });
+    } else if (indice === 3) {
+      // Currais - vai para nível 3 (precisa ter dieta selecionada)
+      if (drillDown.dietaSelecionada) {
+        setDrillDown({
+          nivel: 3,
+          dietaSelecionada: drillDown.dietaSelecionada
+        });
+      }
+    } else if (indice === 4 || (indice === 5 && breadcrumbs[indice] === 'Histórico de consumo')) {
+      // Nome do curral ou Histórico de consumo - vai para nível 4
+      if (drillDown.dietaSelecionada && drillDown.curralSelecionado) {
+        setDrillDown({
+          nivel: 4,
+          dietaSelecionada: drillDown.dietaSelecionada,
+          curralSelecionado: drillDown.curralSelecionado
+        });
+      }
     }
     setPaginaAtual(0);
   };
@@ -896,7 +919,7 @@ const LeituraCocho = () => {
           {getBreadcrumb().map((item, index) => <React.Fragment key={index}>
               {index > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
-                {index === getBreadcrumb().length - 1 ? <BreadcrumbPage>{item}</BreadcrumbPage> : <BreadcrumbLink onClick={() => handleBreadcrumbClick(index + 1)} className="cursor-pointer">
+                {index === getBreadcrumb().length - 1 ? <BreadcrumbPage>{item}</BreadcrumbPage> : <BreadcrumbLink onClick={() => handleBreadcrumbClick(index)} className="cursor-pointer">
                     {item}
                   </BreadcrumbLink>}
               </BreadcrumbItem>
