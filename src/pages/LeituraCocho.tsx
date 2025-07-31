@@ -112,28 +112,18 @@ const LeituraCocho = () => {
   const fetchDadosNivel1 = async () => {
     setIsLoading(true);
     try {
-      // Buscar a data mais recente disponível
-      const {
-        data: dataRecente
-      } = await supabase.from('fato_trato').select('data').order('data', {
-        ascending: false
-      }).limit(1).maybeSingle();
-      if (!dataRecente) {
-        console.log('Nenhum dado encontrado');
-        setDadosGrafico([]);
-        return;
-      }
-
-      // Usar a data mais recente encontrada
-      const dataParaBusca = dataRecente.data;
+      console.log('Buscando dados nível 1 para data:', dataSelecionada);
+      
       const {
         data: fatoTrato,
         error
-      } = await supabase.from('fato_trato').select('previsto_kg, realizado_kg').eq('data', dataParaBusca);
+      } = await supabase.from('fato_trato').select('previsto_kg, realizado_kg').eq('data', dataSelecionada);
+      
       if (error) {
         console.error('Erro ao buscar dados nível 1:', error);
         return;
       }
+      
       if (fatoTrato && fatoTrato.length > 0) {
         const totais = fatoTrato.reduce((acc, item) => ({
           previsto: acc.previsto + (item.previsto_kg || 0),
@@ -149,6 +139,9 @@ const LeituraCocho = () => {
           tipo: 'total',
           corRealizado: calcularCor(totais.previsto, totais.realizado)
         }]);
+      } else {
+        console.log('Nenhum dado encontrado para a data:', dataSelecionada);
+        setDadosGrafico([]);
       }
     } catch (error) {
       console.error('Erro ao buscar dados nível 1:', error);
