@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/components/AuthProvider';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
-import ETLButton from '@/components/ETLButton';
-import { 
-  BarChart3, 
-  Upload, 
-  FileText, 
-  Settings, 
-  LogOut, 
-  Users, 
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+
+import {
+  BarChart3,
+  FileText,
+  Settings,
+  LogOut,
+  Users,
   TrendingUp,
   Package,
   Activity,
   Scale,
-  Calendar
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+  Calendar,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -31,22 +36,25 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!user) return;
-      
+
       try {
         // Buscar confinamentos do usuário
         const { data: userConfinamentos } = await supabase
-          .from('user_confinamentos')
-          .select('confinamento_id')
-          .eq('user_id', user.id);
+          .from("user_confinamentos")
+          .select("confinamento_id")
+          .eq("user_id", user.id);
 
         if (!userConfinamentos?.length) return;
 
         // Buscar a data mais recente disponível
         const { data: dataRecente } = await supabase
-          .from('fato_resumo')
-          .select('data')
-          .in('confinamento_id', userConfinamentos.map(uc => uc.confinamento_id))
-          .order('data', { ascending: false })
+          .from("fato_resumo")
+          .select("data")
+          .in(
+            "confinamento_id",
+            userConfinamentos.map((uc) => uc.confinamento_id)
+          )
+          .order("data", { ascending: false })
           .limit(1)
           .maybeSingle();
 
@@ -54,35 +62,53 @@ const Dashboard = () => {
 
         // Buscar dados da data mais recente
         const { data: resumo } = await supabase
-          .from('fato_resumo')
-          .select('qtd_animais, cms_realizado_kg, dias_confinamento, peso_medio_estimado_kg')
-          .eq('data', dataRecente.data)
-          .in('confinamento_id', userConfinamentos.map(uc => uc.confinamento_id));
+          .from("fato_resumo")
+          .select(
+            "qtd_animais, cms_realizado_kg, dias_confinamento, peso_medio_estimado_kg"
+          )
+          .eq("data", dataRecente.data)
+          .in(
+            "confinamento_id",
+            userConfinamentos.map((uc) => uc.confinamento_id)
+          );
 
         if (resumo?.length) {
-          const total = resumo.reduce((sum, item) => sum + (item.qtd_animais || 0), 0);
+          const total = resumo.reduce(
+            (sum, item) => sum + (item.qtd_animais || 0),
+            0
+          );
           setAnimaisTotal(total);
 
           // CMS Médio ponderado pela quantidade de animais
-          const cmsTotal = resumo.reduce((sum, item) => 
-            sum + ((item.cms_realizado_kg || 0) * (item.qtd_animais || 0)), 0);
+          const cmsTotal = resumo.reduce(
+            (sum, item) =>
+              sum + (item.cms_realizado_kg || 0) * (item.qtd_animais || 0),
+            0
+          );
           const cmsMedia = total > 0 ? cmsTotal / total : 0;
           setCmsMedio(cmsMedia);
 
           // Dias Médios ponderado pela quantidade de animais
-          const diasTotal = resumo.reduce((sum, item) => 
-            sum + ((item.dias_confinamento || 0) * (item.qtd_animais || 0)), 0);
+          const diasTotal = resumo.reduce(
+            (sum, item) =>
+              sum + (item.dias_confinamento || 0) * (item.qtd_animais || 0),
+            0
+          );
           const diasMedia = total > 0 ? diasTotal / total : 0;
           setDiasMedios(diasMedia);
 
           // Peso Médio Estimado ponderado pela quantidade de animais
-          const pesoTotal = resumo.reduce((sum, item) => 
-            sum + ((item.peso_medio_estimado_kg || 0) * (item.qtd_animais || 0)), 0);
+          const pesoTotal = resumo.reduce(
+            (sum, item) =>
+              sum +
+              (item.peso_medio_estimado_kg || 0) * (item.qtd_animais || 0),
+            0
+          );
           const pesoMedia = total > 0 ? pesoTotal / total : 0;
           setPesoMedioEstimado(pesoMedia);
         }
       } catch (error) {
-        console.error('Erro ao buscar dados do dashboard:', error);
+        console.error("Erro ao buscar dados do dashboard:", error);
       } finally {
         setIsLoading(false);
       }
@@ -93,52 +119,45 @@ const Dashboard = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/auth');
+    navigate("/auth");
   };
 
   const dashboardCards = [
     {
-      title: 'Upload de Dados',
-      description: 'Fazer upload dos arquivos ETL',
-      icon: Upload,
-      color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      route: '/upload'
-    },
-    {
-      title: 'Leitura de Cocho',
-      description: 'Lançamento das leituras diárias',
+      title: "Leitura de Cocho",
+      description: "Lançamento das leituras diárias",
       icon: BarChart3,
-      color: 'bg-gradient-to-br from-green-500 to-green-600',
-      route: '/leitura-cocho'
+      color: "bg-gradient-to-br from-green-500 to-green-600",
+      route: "/leitura-cocho",
     },
     {
-      title: 'Controle de Estoque',
-      description: 'Gestão de insumos e ingredientes',
+      title: "Controle de Estoque",
+      description: "Gestão de insumos e ingredientes",
       icon: Package,
-      color: 'bg-gradient-to-br from-purple-500 to-purple-600',
-      route: '/controle-estoque'
+      color: "bg-gradient-to-br from-purple-500 to-purple-600",
+      route: "/controle-estoque",
     },
     {
-      title: 'Painel Operacional',
-      description: 'Dashboard geral do confinamento',
+      title: "Painel Operacional",
+      description: "Dashboard geral do confinamento",
       icon: Activity,
-      color: 'bg-gradient-to-br from-orange-500 to-orange-600',
-      route: '/operacional'
+      color: "bg-gradient-to-br from-orange-500 to-orange-600",
+      route: "/operacional",
     },
     {
-      title: 'Análise de Desvios',
-      description: 'Desvios de carregamento e trato',
+      title: "Análise de Desvios",
+      description: "Desvios de carregamento e trato",
       icon: TrendingUp,
-      color: 'bg-gradient-to-br from-red-500 to-red-600',
-      route: '/desvios'
+      color: "bg-gradient-to-br from-red-500 to-red-600",
+      route: "/desvios",
     },
     {
-      title: 'Acompanhamento Técnico',
-      description: 'Controle de qualidade e dietas',
+      title: "Acompanhamento Técnico",
+      description: "Controle de qualidade e dietas",
       icon: FileText,
-      color: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
-      route: '/tecnico'
-    }
+      color: "bg-gradient-to-br from-indigo-500 to-indigo-600",
+      route: "/tecnico",
+    },
   ];
 
   return (
@@ -153,7 +172,9 @@ const Dashboard = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold">ConectaBoi Insight</h1>
-                <p className="text-sm text-muted-foreground">Sistema de Gestão de Confinamento</p>
+                <p className="text-sm text-muted-foreground">
+                  Sistema de Gestão de Confinamento
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -176,19 +197,21 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Animais Total</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Animais Total
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? '...' : animaisTotal.toLocaleString('pt-BR')}
+                  {isLoading ? "..." : animaisTotal.toLocaleString("pt-BR")}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   +12% desde ontem
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">CMS Médio</CardTitle>
@@ -196,41 +219,41 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? '...' : `${cmsMedio.toFixed(1)} kg/cab`}
+                  {isLoading ? "..." : `${cmsMedio.toFixed(1)} kg/cab`}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Meta: 8.5 kg/cab
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Dias Médios</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Dias Médios
+                </CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? '...' : `${Math.round(diasMedios)} dias`}
+                  {isLoading ? "..." : `${Math.round(diasMedios)} dias`}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Confinamento
-                </p>
+                <p className="text-xs text-muted-foreground">Confinamento</p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Peso Médio Estimado</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Peso Médio Estimado
+                </CardTitle>
                 <Scale className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? '...' : `${pesoMedioEstimado.toFixed(0)} kg`}
+                  {isLoading ? "..." : `${pesoMedioEstimado.toFixed(0)} kg`}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Por cabeça
-                </p>
+                <p className="text-xs text-muted-foreground">Por cabeça</p>
               </CardContent>
             </Card>
           </div>
@@ -238,8 +261,8 @@ const Dashboard = () => {
           {/* Main Dashboard Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboardCards.map((card, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="cursor-pointer hover:shadow-medium transition-all duration-200 hover:-translate-y-1"
                 onClick={() => navigate(card.route)}
               >
@@ -272,20 +295,19 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <ETLButton />
-                <Button 
-                  variant="outline" 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button
+                  variant="outline"
                   className="h-16 flex flex-col space-y-2"
-                  onClick={() => navigate('/leitura-cocho')}
+                  onClick={() => navigate("/leitura-cocho")}
                 >
                   <BarChart3 className="h-5 w-5" />
                   <span>Leitura Cocho</span>
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="h-16 flex flex-col space-y-2"
-                  onClick={() => navigate('/operacional')}
+                  onClick={() => navigate("/operacional")}
                 >
                   <Activity className="h-5 w-5" />
                   <span>Dashboard</span>

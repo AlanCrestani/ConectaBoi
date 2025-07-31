@@ -37,9 +37,8 @@ const Index = () => {
               bovino
             </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Controle total do seu confinamento com ETL automatizado, análise
-              de desvios, controle de estoque e dashboard operacional em tempo
-              real.
+              Controle total do seu confinamento com análise de desvios,
+              controle de estoque e dashboard operacional em tempo real.
             </p>
           </div>
 
@@ -126,7 +125,7 @@ const Index = () => {
                   <BarChart3 className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">ETL Automatizado</h4>
+                  <h4 className="font-semibold mb-1">Análise Inteligente</h4>
                   <p className="text-muted-foreground text-sm">
                     Processamento automático de dados do Power Query para Python
                   </p>

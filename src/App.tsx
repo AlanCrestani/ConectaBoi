@@ -9,14 +9,14 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
-import Upload from "./pages/Upload";
+
 import LeituraCocho from "./pages/LeituraCocho";
 import ControleEstoque from "./pages/ControleEstoque";
 import PainelOperacional from "./pages/PainelOperacional";
 import AnaliseDesvios from "./pages/AnaliseDesvios";
 import AcompanhamentoTecnico from "./pages/AcompanhamentoTecnico";
 import Subscription from "./pages/Subscription";
-import ETLManagement from "./pages/ETLManagement";
+
 import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
 
@@ -41,14 +41,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/upload"
-              element={
-                <ProtectedRoute>
-                  <Upload />
-                </ProtectedRoute>
-              }
-            />
+            <Route />
             <Route
               path="/leitura-cocho"
               element={
@@ -90,14 +83,7 @@ const App = () => (
               }
             />
             <Route path="/subscription" element={<Subscription />} />
-            <Route
-              path="/etl"
-              element={
-                <ProtectedRoute>
-                  <ETLManagement />
-                </ProtectedRoute>
-              }
-            />
+
             <Route
               path="/usuarios"
               element={
